@@ -1,3 +1,5 @@
+"use server"
+
 import { eq } from "drizzle-orm"
 import { validatedAction } from "@/lib/auth/middleware"
 import { signUpSchema } from "./schemas"

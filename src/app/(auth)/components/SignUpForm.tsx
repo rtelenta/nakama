@@ -23,21 +23,29 @@ import {
 } from "@/components/ui/card"
 import Link from "next/link"
 import { signUpSchema } from "../schemas"
+import { useActionState } from "react"
+import { ActionState } from "@/lib/auth/middleware"
+import { signUp } from "../actions"
 
 export function SignUpForm() {
+  const [state, formAction, isPending] = useActionState<ActionState, FormData>(
+    signUp,
+    { error: "", email: "", name: "" }
+  )
+
   const form = useForm<z.infer<typeof signUpSchema>>({
     resolver: zodResolver(signUpSchema),
     defaultValues: {
-      name: "",
-      email: "",
-      password: "",
-      confirmPassword: "",
+      name: "adasdas",
+      email: "adas@gmail.com",
+      password: "Lulu@001",
+      confirmPassword: "Lulu@001",
     },
   })
 
-  function onSubmit(values: z.infer<typeof signUpSchema>) {
-    console.log(values)
-  }
+  const onSubmit = form.handleSubmit((_, e) => {
+    formAction(new FormData(e!.target))
+  })
 
   return (
     <Card className="mx-auto w-sm">
@@ -48,7 +56,8 @@ export function SignUpForm() {
       <CardContent>
         <Form {...form}>
           <form
-            onSubmit={form.handleSubmit(onSubmit)}
+            onSubmit={onSubmit}
+            action={formAction}
             className="space-y-4"
             noValidate
           >
@@ -115,14 +124,14 @@ export function SignUpForm() {
                 </FormItem>
               )}
             />
+
+            <Button type="submit" className="w-full" disabled={isPending}>
+              Sign up
+            </Button>
           </form>
         </Form>
 
         <div className="space-y-4 mt-4">
-          <Button type="submit" className="w-full">
-            Sign up
-          </Button>
-
           <Button variant="outline" className="w-full" type="button">
             Sign up with Google
           </Button>
